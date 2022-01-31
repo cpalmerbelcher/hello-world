@@ -9,7 +9,8 @@ import {
     TextInput, 
     Pressable,
     Platform, 
-    KeyboardAvoidingView 
+    KeyboardAvoidingView,
+    ScrollView
 } from 'react-native';
 
 const image = require('../assets/images/bg.png');

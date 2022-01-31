@@ -14,7 +14,7 @@ export default class Chat extends React.Component {
         justifyContent:'center', 
         backgroundColor: bgColor ? bgColor : "#fff",}}>
         <View style={styles.giftedChat}>
-           <GiftedChat
+           {/* <GiftedChat
               renderBubble={this.renderBubble.bind(this)}
               renderInputToolbar={this.renderInputToolbar.bind(this)}
               messages={this.state.messages}
@@ -27,7 +27,7 @@ export default class Chat extends React.Component {
                 name: this.state.name,
                 avatar: this.state.user.avatar
               }}
-            />
+            /> */}
             { Platform.OS === 'android' ? (
               <KeyboardAvoidingView behavior="height" />
               ) : null}

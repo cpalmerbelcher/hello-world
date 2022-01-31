@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 // import react native gesture handler
 import 'react-native-gesture-handler';
-import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, ScrollView } from 'react-native';
 //import react navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
