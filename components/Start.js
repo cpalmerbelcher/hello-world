@@ -10,7 +10,10 @@ import {
     Pressable,
     Platform, 
     KeyboardAvoidingView,
-    ScrollView
+    ScrollView,
+    TouchableWithoutFeedback,
+    Button,
+    Keyboard
 } from 'react-native';
 
 const image = require('../assets/images/bg.png');
@@ -148,6 +151,24 @@ export default class Start extends React.Component {
     }
 }
 
+const KeyboardAvoidingComponent = () => {
+    return (
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.inner}>
+            <Text style={styles.header}>Header</Text>
+            <TextInput placeholder="Username" style={styles.textInput} />
+            <View style={styles.btnContainer}>
+              <Button title="Submit" onPress={() => null} />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    );
+  };
 
 const styles = StyleSheet.create({
     container: {
@@ -280,3 +301,4 @@ const styles = StyleSheet.create({
         padding: 20
     }
 });
+
