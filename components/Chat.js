@@ -1,6 +1,7 @@
 import React from "react";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import { View, Platform, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, Keyboard, Button, LogBox } from 'react-native';
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as firebase from 'firebase';
 import "firebase/firestore";
@@ -42,18 +43,23 @@ export default class Chat extends React.Component {
     this.referenceChatMessages = firebase.firestore().collection("messages");
     this.refMsgsUser = null;
   
-  componentDidMount() {
+  componentDidMount(); {
     // Set the page title once Chat is loaded
     let { name } = this.props.route.params
     // Adds the name to top of screen
     this.props.navigation.setOptions({ title: name })
 
-    //To find out user's connection status
+    // To find out user's connection status
     NetInfo.fetch().then(connection => {
         //actions when user is online
         if (connection.isConnected) {
             this.setState({ isConnected: true });
             console.log('online');
+
+      //listens for updates in the collection
+      this.unsubscribe = this.referenceChatMessages
+        .orderBy("createdAt", "desc")
+        .onSnapshot(this.onCollectionUpdate)
         
       //user can sign in anonymously
       this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
@@ -70,10 +76,6 @@ export default class Chat extends React.Component {
                 avatar: "",
             },
         });
-        //listens for updates in the collection
-        this.unsubscribe = this.referenceChatMessages
-          .orderBy("createdAt", "desc")
-          .onSnapshot(this.onCollectionUpdate)
         //referencing messages of current user
         this.refMsgsUser = firebase
           .firestore()
@@ -83,6 +85,7 @@ export default class Chat extends React.Component {
         //save messages when online
         this.saveMessages();
         } else {
+            //when user is offline
             this.setState({ isConnected: false });
             console.log('offline');
             //retrieve chat from asyncstorage
@@ -117,13 +120,13 @@ export default class Chat extends React.Component {
 };
 
   //unsubscribe from collection updates
-  componentWillUnmount() {
+  componentWillUnmount(); {
       this.authUnsubscribe();
       this.unsubscribe();
   }
 
   // Add messages to database
-  addMessages() { 
+  addMessages(); { 
     const message = this.state.messages[0];
     // add a new messages to the collection
     this.referenceChatMessages.add({
@@ -137,26 +140,24 @@ export default class Chat extends React.Component {
   }
 
   //callback function when a user sends a message
-  onSend(messages = []) {
+  onSend(messages = []); {
     this.setState((previousState) => ({
       messages: GiftedChat.append(previousState.messages, messages),
     }));
   }
 
-  renderBubble(props) {
+  //customize the chat bubble background color
+  renderBubble(props); {
     return (
-      <Bubble
-        {...props}
+      <Bubble {...props}
         wrapperStyle={{
-          right: {
-            backgroundColor: '#000',
-          },
+          right: {backgroundColor: '#000'},
         }}
       />
-    );
+    )
   }
 
-  render() {
+  render(); {
     // Set the background color selected from start screen
     const { bgColor } = this.props.route.params;
     return (
@@ -186,36 +187,17 @@ export default class Chat extends React.Component {
             </View>
         </View>
     )
+  }
 }
-}
-
-// const KeyboardAvoidingComponent = () => {
-//   return (
-//     <KeyboardAvoidingView
-//       behavior={Platform.OS === "ios" ? "padding" : "height"}
-//       style={styles.container}
-//     >
-//       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-//         <View style={styles.inner}>
-//           <Text style={styles.header}>Header</Text>
-//           <TextInput placeholder="Username" style={styles.textInput} />
-//           <View style={styles.btnContainer}>
-//             <Button title="Submit" onPress={() => null} />
-//           </View>
-//         </View>
-//       </TouchableWithoutFeedback>
-//     </KeyboardAvoidingView>
-//   );
-// };
 
 const styles = StyleSheet.create({
   container: {
       flex: 1,
       flexDirection: 'column',
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'center'
   },
   giftedChat: {
       color: '#000',
   },
-})
+}
