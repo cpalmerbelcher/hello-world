@@ -1,7 +1,8 @@
 import React from "react";
-import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { View, Platform, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, Keyboard, Button, LogBox } from 'react-native';
 // import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from "@react-native-community/netinfo";
 
 import * as firebase from 'firebase';
 import "firebase/firestore";
@@ -42,8 +43,13 @@ export default class Chat extends React.Component {
     // reference to the Firestore messages collection
     this.referenceChatMessages = firebase.firestore().collection("messages");
     this.refMsgsUser = null;
-  
-  componentDidMount(); {
+    }
+
+    renderInputToolbar(props) {
+      return <InputToolbar {...props} />;
+  }
+
+  componentDidMount() {
     // Set the page title once Chat is loaded
     let { name } = this.props.route.params
     // Adds the name to top of screen
@@ -120,13 +126,13 @@ export default class Chat extends React.Component {
 };
 
   //unsubscribe from collection updates
-  componentWillUnmount(); {
+  componentWillUnmount() {
       this.authUnsubscribe();
       this.unsubscribe();
   }
 
   // Add messages to database
-  addMessages(); { 
+  addMessages() { 
     const message = this.state.messages[0];
     // add a new messages to the collection
     this.referenceChatMessages.add({
@@ -140,14 +146,14 @@ export default class Chat extends React.Component {
   }
 
   //callback function when a user sends a message
-  onSend(messages = []); {
+  onSend(messages = []) {
     this.setState((previousState) => ({
       messages: GiftedChat.append(previousState.messages, messages),
     }));
   }
 
   //customize the chat bubble background color
-  renderBubble(props); {
+  renderBubble(props) {
     return (
       <Bubble {...props}
         wrapperStyle={{
@@ -157,7 +163,7 @@ export default class Chat extends React.Component {
     )
   }
 
-  render(); {
+  render() {
     // Set the background color selected from start screen
     const { bgColor } = this.props.route.params;
     return (
@@ -190,14 +196,14 @@ export default class Chat extends React.Component {
   }
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//       flex: 1,
-//       flexDirection: 'column',
-//       justifyContent: 'center',
-//       alignItems: 'center'
-//   },
-//   giftedChat: {
-//       color: '#000',
-//   },
-}
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center'
+  },
+  giftedChat: {
+      color: '#000',
+  },
+})
