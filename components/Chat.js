@@ -1,7 +1,7 @@
 import React from "react";
 import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { View, Platform, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, Keyboard, Button, LogBox } from 'react-native';
-// import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo";
 
 import * as firebase from 'firebase';
@@ -45,9 +45,39 @@ export default class Chat extends React.Component {
     this.refMsgsUser = null;
     }
 
-    renderInputToolbar(props) {
-      return <InputToolbar {...props} />;
-  }
+    async saveMessages() {
+      try {
+        await AsyncStorage.setItem(
+          "messages",
+          JSON.stringify(this.state.messages)
+        );
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+  
+    async getMessages() {
+      let messages = "";
+      try {
+        messages = (await AsyncStorage.getItem("messages")) || [];
+        this.setState({
+          messages: JSON.parse(messages),
+        });
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+  
+    async deleteMessages() {
+      try {
+        await AsyncStorage.removeItem("messages");
+        this.setState({
+          messages: [],
+        });
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
 
   componentDidMount() {
     // Set the page title once Chat is loaded
@@ -100,6 +130,20 @@ export default class Chat extends React.Component {
     });
   }
 
+  // Add messages to database
+  addMessages() { 
+    const message = this.state.messages[0];
+    // add a new messages to the collection
+    this.referenceChatMessages.add({
+        _id: message._id,
+        text: message.text || "",
+        createdAt: message.createdAt,
+        user: this.state.user,
+        image: message.image || "",
+        location: message.location || null,
+    });
+  }
+
   // when updated set the messages state with the current data 
   onCollectionUpdate = (querySnapshot) => { 
     const messages = [];
@@ -123,33 +167,29 @@ export default class Chat extends React.Component {
     this.setState({
         messages: messages
     });
+    this.saveMessages();
 };
 
   //unsubscribe from collection updates
   componentWillUnmount() {
+    if (this.state.isConnected) {
+      //stop listening to authentication
       this.authUnsubscribe();
+      //stop listening for changes
       this.unsubscribe();
-  }
-
-  // Add messages to database
-  addMessages() { 
-    const message = this.state.messages[0];
-    // add a new messages to the collection
-    this.referenceChatMessages.add({
-        _id: message._id,
-        text: message.text || "",
-        createdAt: message.createdAt,
-        user: this.state.user,
-        image: message.image || "",
-        location: message.location || null,
-    });
+    }
   }
 
   //callback function when a user sends a message
   onSend(messages = []) {
     this.setState((previousState) => ({
       messages: GiftedChat.append(previousState.messages, messages),
-    }));
+    }),
+    () => {
+      this.addMessages();
+      this.saveMessages();
+      }
+    );
   }
 
   //customize the chat bubble background color
@@ -163,38 +203,41 @@ export default class Chat extends React.Component {
     )
   }
 
+  renderInputToolbar(props) {
+    if (this.state.isConnected == false) {
+    } else {
+      return <InputToolbar {...props} />;
+    }
+  }
+
   render() {
     // Set the background color selected from start screen
     const { bgColor } = this.props.route.params;
-    return (
+      return (
         <View style={{
-            flex: 1,
-            alignItems:'center', 
-            justifyContent:'center', 
-            backgroundColor: bgColor ? bgColor : "#fff",}}>
-            <View style={styles.giftedChat}>
-            <GiftedChat
-                renderDay={this.renderDay}
-                messages={this.state.messages}
-                onSend={messages => this.onSend(messages)}
-                renderBubble={this.renderBubble.bind(this)}
-                renderInputToolbar={this.renderInputToolbar.bind(this)}
-                renderActions={this.renderCustomActions}
-                renderCustomView={this.renderCustomView}
-                user={{
-                    _id: this.state.user._id,
-                    name: this.state.name,
-                    avatar: this.state.user.avatar
-                }}
-                />
-                { Platform.OS === 'android' ? (
-                    <KeyboardAvoidingView behavior="height" />
-                ) : null}
-            </View>
+        flex: 1,
+        backgroundColor: bgColor ? bgColor : "#fff",}}>
+          <GiftedChat
+          renderDay={this.renderDay}
+          messages={this.state.messages}
+          onSend={messages => this.onSend(messages)}
+          renderBubble={this.renderBubble.bind(this)}
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
+          renderActions={this.renderCustomActions}
+          renderCustomView={this.renderCustomView}
+          user={{
+          _id: this.state.user._id,
+          name: this.state.name,
+          avatar: this.state.user.avatar
+          }}
+          />
+            { Platform.OS === 'android' ? (
+            <KeyboardAvoidingView behavior="padding" />
+            ) : null}
         </View>
-    )
-  }
-}
+      )
+      }
+    }
 
 const styles = StyleSheet.create({
   container: {
