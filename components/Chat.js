@@ -1,7 +1,7 @@
 import React from "react";
 import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { View, Platform, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, Keyboard, Button, LogBox } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+// import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo";
 
 import * as firebase from 'firebase';
