@@ -3,6 +3,8 @@ import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { View, Platform, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, Keyboard, Button, LogBox } from 'react-native';
 // import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo";
+import CustomActions from './CustomActions';
+// import MapView from 'react-native-maps';
 
 import * as firebase from 'firebase';
 import "firebase/firestore";
@@ -209,6 +211,50 @@ export default class Chat extends React.Component {
       return <InputToolbar {...props} />;
     }
   }
+
+  renderCustomActions = (props) => <CustomActions {...props} />;
+
+  renderCustomView(props) {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
+  }
+
+  // customizes system messages
+  renderSystemMessage(props) {
+    return (
+      <SystemMessage
+        {...props}
+        textStyle={{
+          color: "#57402f",
+        }}
+      />
+    );
+  }
+
+  // customizes day messages
+  // renderDay(props) {
+  //   return (
+  //     <Day
+  //       {...props}
+  //       textStyle={{
+  //         color: "#57402f",
+  //       }}
+  //     />
+  //   );
+  // }
 
   render() {
     // Set the background color selected from start screen
