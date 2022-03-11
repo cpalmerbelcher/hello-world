@@ -4,7 +4,7 @@ import { View, Platform, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedb
 // import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo";
 import CustomActions from './CustomActions';
-// import MapView from 'react-native-maps';
+import MapView from 'react-native-maps';
 
 import * as firebase from 'firebase';
 import "firebase/firestore";
@@ -244,7 +244,7 @@ export default class Chat extends React.Component {
     );
   }
 
-  // customizes day messages
+  //customizes day messages
   // renderDay(props) {
   //   return (
   //     <Day
