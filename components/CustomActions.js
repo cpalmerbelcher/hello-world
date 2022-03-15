@@ -2,9 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-// import * as Location from "expo-location";
 import * as firebase from "firebase";
 import "firebase/firestore";
+import * as Location from "expo-location";
 
 export default class CustomActions extends React.Component {
   //pick image from phone
