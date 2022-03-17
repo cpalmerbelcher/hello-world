@@ -21,6 +21,8 @@ const firebaseConfig = {
   measurementId: "G-KQKT8C76MW"
 };
 
+LogBox.ignoreAllLogs();
+
 export default class Chat extends React.Component {
   constructor(props) {
     super();
